@@ -1,0 +1,68 @@
+### Verificar estado del servicio
+GET http://localhost:8000/api/health
+Accept: application/json
+
+### Enviar email simple
+POST http://localhost:8000/api/email/send
+Content-Type: application/json
+Accept: application/json
+
+{
+  "to": "destinatario@example.com",
+  "subject": "Prueba de API",
+  "body": "Este es un mensaje de prueba desde la API de LittleOwls"
+}
+
+### Enviar email con CC y BCC
+POST http://localhost:8000/api/email/send
+Content-Type: application/json
+Accept: application/json
+
+{
+  "to": "principal@example.com",
+  "subject": "Email con copias",
+  "body": "Este email tiene copias y copias ocultas",
+  "cc": ["copia1@example.com", "copia2@example.com"],
+  "bcc": ["oculta@example.com"],
+  "reply_to": "responder@example.com"
+}
+
+### Enviar email HTML
+POST http://localhost:8000/api/email/send-html
+Content-Type: application/json
+Accept: application/json
+
+{
+  "to": "destinatario@example.com",
+  "subject": "Email HTML desde LittleOwls",
+  "body": "<h1>Bienvenido</h1><p>Este es un email con <strong>formato HTML</strong></p><ul><li>Punto 1</li><li>Punto 2</li></ul>"
+}
+
+### Enviar email con adjunto base64
+POST http://localhost:8000/api/email/send
+Content-Type: application/json
+Accept: application/json
+
+{
+  "to": "destinatario@example.com",
+  "subject": "Email con archivo adjunto",
+  "body": "Este email contiene un archivo adjunto",
+  "attachments": [
+    {
+      "data": "SGVsbG8gV29ybGQh",
+      "name": "saludo.txt",
+      "mime": "text/plain"
+    }
+  ]
+}
+
+### Ejemplo de error - Email inválido
+POST http://localhost:8000/api/email/send
+Content-Type: application/json
+Accept: application/json
+
+{
+  "to": "email-invalido",
+  "subject": "Test",
+  "body": "Este request fallará por email inválido"
+} 
