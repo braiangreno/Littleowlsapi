@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\MailerController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,4 +35,6 @@ Route::get('/health', function () {
 Route::group(['prefix' => 'v1'], function () {
     Route::post('sendmail', [MailerController::class, 'store'])->name('v1.sendmail');
     Route::post('sendfiles', [MailerController::class, 'sendFile'])->name('v1.sendfiles');
+    Route::post('order', [PaymentController::class, 'createOrder'])->name('v1.order');
+    Route::post('payments/webhook', [PaymentController::class, 'webhook'])->name('v1.webhook');
 }); 
