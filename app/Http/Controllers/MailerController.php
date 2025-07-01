@@ -10,10 +10,19 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
+/**
+ * @OA\Tag(name="Legacy Mail")
+ */
 class MailerController extends Controller
 {
     /**
-     * Enviar correo sin adjuntos
+     * @OA\Post(
+     *     path="/v1/sendmail",
+     *     tags={"Legacy Mail"},
+     *     summary="Enviar correo simple (legacy)",
+     *     requestBody=@OA\RequestBody(request="EmailPayloadLegacy", ref="#/components/requestBodies/EmailPayload"),
+     *     @OA\Response(response=200, description="Correo enviado")
+     * )
      */
     public function store(SendMailRequest $request): JsonResponse
     {
@@ -41,7 +50,13 @@ class MailerController extends Controller
     }
 
     /**
-     * Enviar correo con adjuntos predefinidos
+     * @OA\Post(
+     *     path="/v1/sendfiles",
+     *     tags={"Legacy Mail"},
+     *     summary="Enviar correo con PDFs adjuntos (legacy)",
+     *     requestBody=@OA\RequestBody(request="EmailPayloadLegacyFile", ref="#/components/requestBodies/EmailPayload"),
+     *     @OA\Response(response=200, description="Correo enviado")
+     * )
      */
     public function sendFile(SendMailRequest $request): JsonResponse
     {

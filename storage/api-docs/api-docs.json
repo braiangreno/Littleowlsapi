@@ -1,0 +1,315 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "LittleOwls Email & Payment API",
+        "description": "API para envío de correos y generación de órdenes de pago con Stripe.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "Servidor API"
+        }
+    ],
+    "paths": {
+        "/email/send": {
+            "post": {
+                "tags": [
+                    "Email"
+                ],
+                "summary": "Enviar email de texto plano",
+                "description": "Enviar un email",
+                "operationId": "c4a940ce55c59afadc2c761ff4bff30c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "to",
+                                    "subject",
+                                    "body"
+                                ],
+                                "properties": {
+                                    "to": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "subject": {
+                                        "type": "string"
+                                    },
+                                    "body": {
+                                        "type": "string"
+                                    },
+                                    "cc": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "email"
+                                        }
+                                    },
+                                    "bcc": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "email"
+                                        }
+                                    },
+                                    "reply_to": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "attachments": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "path": {
+                                                    "type": "string"
+                                                },
+                                                "data": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "mime": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Email enviado"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                }
+            }
+        },
+        "/email/send-html": {
+            "post": {
+                "tags": [
+                    "Email"
+                ],
+                "summary": "Enviar email HTML",
+                "description": "Enviar email con plantilla HTML",
+                "operationId": "1aaecc3d29eeb33343b77fa8cf29deec",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/EmailPayload"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Email enviado"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    }
+                }
+            }
+        },
+        "/v1/sendmail": {
+            "post": {
+                "tags": [
+                    "Legacy Mail"
+                ],
+                "summary": "Enviar correo simple (legacy)",
+                "operationId": "9bcd169d827e4fb1acf994a060f3b13b",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/EmailPayload"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Correo enviado"
+                    }
+                }
+            }
+        },
+        "/v1/sendfiles": {
+            "post": {
+                "tags": [
+                    "Legacy Mail"
+                ],
+                "summary": "Enviar correo con PDFs adjuntos (legacy)",
+                "operationId": "214f1cf21c18bac307106f84adc22e49",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/EmailPayload"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Correo enviado"
+                    }
+                }
+            }
+        },
+        "/v1/order": {
+            "post": {
+                "tags": [
+                    "Pagos"
+                ],
+                "summary": "Crear sesión de pago en Stripe",
+                "operationId": "20795c7b70dcea31f7f21adc916c464a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "amount",
+                                    "currency",
+                                    "description",
+                                    "success_url",
+                                    "cancel_url"
+                                ],
+                                "properties": {
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "example": "usd"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "metadata": {
+                                        "type": "object"
+                                    },
+                                    "success_url": {
+                                        "type": "string",
+                                        "format": "url"
+                                    },
+                                    "cancel_url": {
+                                        "type": "string",
+                                        "format": "url"
+                                    },
+                                    "customer_email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Checkout URL generado"
+                    }
+                }
+            }
+        },
+        "/v1/payments/webhook": {
+            "post": {
+                "tags": [
+                    "Pagos"
+                ],
+                "summary": "Webhook de Stripe",
+                "operationId": "c22c999e707f7b1c8a7ae9c0ffc447c6",
+                "responses": {
+                    "200": {
+                        "description": "Evento procesado"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "requestBodies": {
+            "EmailPayloadLegacy": {
+                "$ref": "#/components/requestBodies/EmailPayload"
+            },
+            "EmailPayloadLegacyFile": {
+                "$ref": "#/components/requestBodies/EmailPayload"
+            },
+            "EmailPayload": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "to",
+                                "subject",
+                                "body"
+                            ],
+                            "properties": {
+                                "to": {
+                                    "type": "string",
+                                    "format": "email"
+                                },
+                                "subject": {
+                                    "type": "string"
+                                },
+                                "body": {
+                                    "type": "string"
+                                },
+                                "cc": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "bcc": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "reply_to": {
+                                    "type": "string",
+                                    "format": "email"
+                                },
+                                "attachments": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "path": {
+                                                "type": "string"
+                                            },
+                                            "data": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "mime": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Legacy Mail"
+        },
+        {
+            "name": "Email",
+            "description": "Email"
+        },
+        {
+            "name": "Pagos",
+            "description": "Pagos"
+        }
+    ]
+}

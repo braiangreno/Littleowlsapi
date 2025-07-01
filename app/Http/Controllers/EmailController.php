@@ -13,6 +13,32 @@ class EmailController extends Controller
     /**
      * Enviar un email
      *
+     * @OA\Post(
+     *     path="/email/send",
+     *     tags={"Email"},
+     *     summary="Enviar email de texto plano",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"to","subject","body"},
+     *             @OA\Property(property="to", type="string", format="email"),
+     *             @OA\Property(property="subject", type="string"),
+     *             @OA\Property(property="body", type="string"),
+     *             @OA\Property(property="cc", type="array", @OA\Items(type="string", format="email")),
+     *             @OA\Property(property="bcc", type="array", @OA\Items(type="string", format="email")),
+     *             @OA\Property(property="reply_to", type="string", format="email"),
+     *             @OA\Property(property="attachments", type="array", @OA\Items(
+     *                 @OA\Property(property="path", type="string"),
+     *                 @OA\Property(property="data", type="string"),
+     *                 @OA\Property(property="name", type="string"),
+     *                 @OA\Property(property="mime", type="string")
+     *             ))
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Email enviado"),
+     *     @OA\Response(response=422, description="Error de validación")
+     * )
+     *
      * @param SendEmailRequest $request
      * @return JsonResponse
      */
@@ -99,6 +125,15 @@ class EmailController extends Controller
 
     /**
      * Enviar email con plantilla HTML
+     *
+     * @OA\Post(
+     *     path="/email/send-html",
+     *     tags={"Email"},
+     *     summary="Enviar email HTML",
+     *     @OA\RequestBody(request="EmailPayload", ref="#/components/requestBodies/EmailPayload"),
+     *     @OA\Response(response=200, description="Email enviado"),
+     *     @OA\Response(response=422, description="Error de validación")
+     * )
      *
      * @param SendEmailRequest $request
      * @return JsonResponse

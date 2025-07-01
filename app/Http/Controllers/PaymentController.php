@@ -9,6 +9,26 @@ use Stripe\StripeClient;
 use Illuminate\Http\Request;
 use Exception;
 
+/**
+ * @OA\Post(
+ *     path="/v1/order",
+ *     tags={"Pagos"},
+ *     summary="Crear sesión de pago en Stripe",
+ *     @OA\RequestBody(request="StripeOrder", required=true,
+ *         @OA\JsonContent(
+ *             required={"amount","currency","description","success_url","cancel_url"},
+ *             @OA\Property(property="amount", type="number", format="float"),
+ *             @OA\Property(property="currency", type="string", example="usd"),
+ *             @OA\Property(property="description", type="string"),
+ *             @OA\Property(property="metadata", type="object"),
+ *             @OA\Property(property="success_url", type="string", format="url"),
+ *             @OA\Property(property="cancel_url", type="string", format="url"),
+ *             @OA\Property(property="customer_email", type="string", format="email")
+ *         )
+ *     ),
+ *     @OA\Response(response=200, description="Checkout URL generado")
+ * )
+ */
 class PaymentController extends Controller
 {
     protected StripeClient $stripe;
@@ -68,6 +88,14 @@ class PaymentController extends Controller
 
     /**
      * Webhook para eventos de Stripe
+     */
+    /**
+     * @OA\Post(
+     *     path="/v1/payments/webhook",
+     *     tags={"Pagos"},
+     *     summary="Webhook de Stripe",
+     *     @OA\Response(response=200, description="Evento procesado")
+     * )
      */
     public function webhook(Request $request): JsonResponse
     {
