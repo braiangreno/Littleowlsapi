@@ -15,9 +15,12 @@ class OrderStoreRequest extends FormRequest
     {
         return [
             'amount'       => 'required|numeric|min:0.5',
-            'currency'     => 'required|string|size:3',
-            'description'  => 'required|string|max:255',
+            'currency'     => 'sometimes|string|size:3',
+            'description'  => 'sometimes|string|max:255',
             'metadata'     => 'sometimes|array',
+            'quantity_all' => 'sometimes|integer|min:1',
+            'product'      => 'sometimes|array',
+            'scheduleId'   => 'sometimes',
             'success_url'  => 'required|url',
             'cancel_url'   => 'required|url',
             'customer_email' => 'sometimes|email'

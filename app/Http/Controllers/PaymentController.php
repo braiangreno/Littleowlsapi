@@ -26,7 +26,7 @@ use Exception;
  *             @OA\Property(property="customer_email", type="string", format="email")
  *         )
  *     ),
- *     @OA\Response(response=200, description="Checkout URL generado")
+ *     @OA\Response(response=200, description="URL de pago generada")
  * )
  */
 class PaymentController extends Controller
@@ -46,21 +46,32 @@ class PaymentController extends Controller
         $data = $request->validated();
 
         try {
+            // Compatibilidad con payload antiguo
+            $currency   = $data['currency'] ?? 'usd';
+            $quantity   = $data['quantity_all'] ?? 1;
+            $description = $data['description'] ?? (
+                isset($data['product'][0]['name']) ? $data['product'][0]['name'] : 'Payment'
+            );
+
+            $unitAmount = (int) round($data['amount'] * 100);
+
             $session = $this->stripe->checkout->sessions->create([
                 'line_items' => [[
                     'price_data' => [
-                        'currency'     => $data['currency'],
+                        'currency'     => $currency,
                         'product_data' => [
-                            'name' => $data['description'],
+                            'name' => $description,
                         ],
-                        'unit_amount'  => (int) round($data['amount'] * 100), // convertir a centavos
+                        'unit_amount'  => $unitAmount,
                     ],
-                    'quantity' => 1,
+                    'quantity' => $quantity,
                 ]],
                 'mode' => 'payment',
-                'metadata' => $data['metadata'] ?? [],
-                'success_url' => $data['success_url'],
-                'cancel_url'  => $data['cancel_url'],
+                'metadata' => array_merge($data['metadata'] ?? [], [
+                    'scheduleId' => $data['scheduleId'] ?? null,
+                ]),
+                'success_url' => $data['success_url'] ?? config('services.stripe.success_url'),
+                'cancel_url'  => $data['cancel_url']  ?? config('services.stripe.cancel_url'),
                 'customer_email' => $data['customer_email'] ?? null,
             ]);
 
@@ -71,10 +82,12 @@ class PaymentController extends Controller
                 'checkout_url' => $session->url,
             ]);
 
+            // Respuesta en formato antiguo
             return response()->json([
-                'success' => true,
-                'session_id' => $session->id,
-                'checkout_url' => $session->url,
+                'status' => 200,
+                'response' => [
+                    'payment' => $session->url,
+                ],
             ]);
         } catch (Exception $e) {
             Log::error('PaymentController@createOrder', [$e->getMessage()]);
