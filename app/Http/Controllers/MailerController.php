@@ -22,6 +22,11 @@ class MailerController extends Controller
         try {
             Mail::to($data['email'])->send(new OrderMail($data));
 
+            Log::channel('activity')->info('sendmail', [
+                'endpoint' => 'v1/sendmail',
+                'payload' => $data,
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Correo enviado correctamente',
@@ -44,6 +49,11 @@ class MailerController extends Controller
 
         try {
             Mail::to($data['email'])->send(new FileOrderMail($data));
+
+            Log::channel('activity')->info('sendfiles', [
+                'endpoint' => 'v1/sendfiles',
+                'payload' => $data,
+            ]);
 
             return response()->json([
                 'success' => true,

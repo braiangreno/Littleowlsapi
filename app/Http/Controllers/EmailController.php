@@ -66,6 +66,11 @@ class EmailController extends Controller
                 'subject' => $data['subject']
             ]);
 
+            Log::channel('activity')->info('email_send', [
+                'endpoint' => 'email/send',
+                'payload' => $data,
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Email enviado exitosamente',
@@ -146,6 +151,11 @@ class EmailController extends Controller
             Log::info('Email HTML enviado exitosamente', [
                 'to' => $data['to'],
                 'subject' => $data['subject']
+            ]);
+
+            Log::channel('activity')->info('email_send_html', [
+                'endpoint' => 'email/send-html',
+                'payload' => $data,
             ]);
 
             return response()->json([

@@ -44,6 +44,13 @@ class PaymentController extends Controller
                 'customer_email' => $data['customer_email'] ?? null,
             ]);
 
+            Log::channel('activity')->info('order_created', [
+                'endpoint' => 'v1/order',
+                'request' => $data,
+                'stripe_session_id' => $session->id,
+                'checkout_url' => $session->url,
+            ]);
+
             return response()->json([
                 'success' => true,
                 'session_id' => $session->id,
@@ -81,10 +88,19 @@ class PaymentController extends Controller
             case 'checkout.session.completed':
                 $session = $event->data->object;
                 Log::info('Pago completado', ['session' => $session->id]);
+                Log::channel('activity')->info('stripe_webhook', [
+                    'endpoint' => 'v1/payments/webhook',
+                    'type' => $event->type,
+                    'session_id' => $session->id,
+                ]);
                 // Aquí podrías actualizar bases de datos, enviar emails, etc.
                 break;
             default:
                 Log::info('Evento Stripe recibido', ['type' => $event->type]);
+                Log::channel('activity')->info('stripe_webhook', [
+                    'endpoint' => 'v1/payments/webhook',
+                    'type' => $event->type,
+                ]);
         }
 
         return response()->json(['status' => 'success']);
