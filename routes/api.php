@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\MailerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,4 +29,9 @@ Route::get('/health', function () {
         'service' => 'LittleOwls Email API',
         'timestamp' => now()->toIso8601String()
     ]);
+});
+
+Route::group(['prefix' => 'v1'], function () {
+    Route::post('sendmail', [MailerController::class, 'store'])->name('v1.sendmail');
+    Route::post('sendfiles', [MailerController::class, 'sendFile'])->name('v1.sendfiles');
 }); 

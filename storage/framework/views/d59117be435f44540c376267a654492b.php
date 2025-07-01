@@ -1,0 +1,1 @@
+<?php echo $html; ?> <?php /**PATH C:\Users\Braian\Desktop\Trabajo\Littleowlsapi\resources\views/mails/order.blade.php ENDPATH**/ ?>
